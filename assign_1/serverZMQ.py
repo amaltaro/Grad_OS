@@ -24,19 +24,21 @@ socket.bind(serverAddr)
 print(f"Server listening on: {serverAddr}\n")
 
 # block on recv to get a client request
+filePrefix = "/Users/amaltar2/Master/Grad_OS"
 while True:
     totalReads = 0
     totalWrites = 0
     # Receive file name from the client (and decode it to unicode)
     fileName = socket.recv().decode("utf-8")
+    fullPath = f"{filePrefix}/{fileName}"
     print(f"Received request to open file: {fileName}")
     # first, send file size to the client
-    totalFileSize = os.stat(fileName).st_size
+    totalFileSize = os.stat(fullPath).st_size
     socket.send_string(f"{totalFileSize}")
 
     # now, send the file itself in chunks
     # one recv for each send (!!!)
-    with open(fileName, "rb") as fOjb:
+    with open(fullPath, "rb") as fOjb:
         # client requesting data
         clientMsg = socket.recv().decode("utf-8")
         while True:
